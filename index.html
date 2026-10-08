@@ -760,20 +760,20 @@ async function handleAdminLogin() {
   btn.textContent = "Logging in...";
 
   try {
-    const { data, error } = await sb.from("admin_login")
-      .select("username, password")
-      .eq("username", username)
-      .maybeSingle();
+    const { data: ok, error } = await sb.rpc("admin_login_check", {
+      p_username: username,
+      p_password: password
+    });
     if (error) throw error;
 
-    if (!data || data.password !== password) {
+    if (!ok) {
       showMsg("adminLoginMsg", "error", "Invalid username or password.");
       btn.disabled = false;
       btn.textContent = "Log In";
       return;
     }
 
-    setAdminSession(data.username);
+    setAdminSession(username);
     document.getElementById("adminLoginPassword").value = "";
     btn.disabled = false;
     btn.textContent = "Log In";
